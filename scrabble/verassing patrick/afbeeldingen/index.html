@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patrick's Verjaardag Scrabble</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* (CSS BASISSTIJL) */
+        :root {
+            --mulled-wine: #49110B; 
+            --woodland: #56483B;    
+            --antique-marble: #C8C2B7;
+            --charcoal-smoke: #191A1E;
+            --sandlight: #AD9E89;
+            --goat-milk: #E7E5DB;
+            --correct-green: #38761d; 
+            --input-dark: #373431; 
+        }
+        body {
+            font-family: 'Lato', sans-serif; 
+            background-color: var(--goat-milk); 
+            color: var(--charcoal-smoke);    
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* ⭐⭐ BANNER STIJL ⭐⭐ */
+        .banner {
+            width: 100%;
+            background-color: var(--mulled-wine);   
+            color: var(--goat-milk);    
+            padding: 30px 15px; 
+            box-sizing: border-box;
+            font-family: 'Playfair Display', serif; 
+            font-size: clamp(28px, 8vw, 3em); 
+            letter-spacing: 1px;
+            margin-bottom: 50px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .banner h1 { margin: 0; font-weight: 700; line-height: 1.2; }
+        
+        /* ⭐⭐ RESPONSIVE CONTAINER & KOLOM STIJL ⭐⭐ */
+        .content-container { 
+            max-width: 1100px; 
+            width: 90%; 
+            padding: 0 20px; 
+            box-sizing: border-box; 
+            display: flex; 
+            justify-content: space-between; 
+            gap: 50px; 
+            margin-bottom: 80px; 
+            align-items: flex-start; 
+        }
+        .instructie-kolom { flex: 1; min-width: 300px; text-align: left; }
+        .puzzel-uitleg { background-color: var(--goat-milk); padding: 30px; border: 1px solid var(--antique-marble); border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+        .puzzel-uitleg h2 { color: var(--mulled-wine); font-size: 2em; margin-top: 0; margin-bottom: 25px; font-family: 'Playfair Display', serif; border-bottom: 1px solid var(--antique-marble); padding-bottom: 10px; }
+        .tip-box { margin-top: 35px; padding: 25px; background-color: var(--sandlight); border-left: 5px solid var(--woodland); border-radius: 4px; margin-bottom: 25px; }
+        .tip-box h3 { color: var(--mulled-wine); margin-top: 0; margin-bottom: 15px; font-family: 'Playfair Display', serif; font-size: 1.3em; }
+
+        /* ⭐⭐ SCRABBLE BORD STIJL AANPASSINGEN ⭐⭐ */
+        .scrabble-bord-wrapper { 
+            flex: 1; 
+            max-width: 550px; 
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); 
+            border: 2px solid var(--woodland); 
+            min-width: 0; 
+            width: 100%; 
+            overflow-x: hidden; 
+        }
+        .scrabble-bord { 
+            border-collapse: collapse; 
+            width: 100%; 
+            table-layout: fixed; 
+            min-width: 350px; 
+        }
+        .scrabble-bord td, .scrabble-bord th { 
+            width: 6.25%; 
+            padding-bottom: 6.25%; 
+            position: relative; 
+            box-sizing: border-box; 
+            border: 1px solid var(--antique-marble); 
+            text-align: center; 
+            vertical-align: middle; 
+            background-color: var(--sandlight); 
+            height: 0; 
+        }
+        .scrabble-bord th { border: none; font-size: 0.8em; color: var(--woodland); font-weight: bold; background-color: var(--goat-milk) !important; padding-bottom: 0; height: auto; }
+        
+        .letter-blok { 
+            background-color: var(--goat-milk); 
+            border: 1px solid var(--antique-marble); 
+            border-radius: 3px; 
+            box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); 
+            position: absolute; 
+            top: 2%; 
+            left: 2%; 
+            width: 96%; 
+            height: 96%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-size: 1.4em; 
+            color: var(--charcoal-smoke); 
+            font-weight: 700; 
+            text-transform: uppercase; 
+        }
+        .raadsel { padding: 0 !important; background-color: var(--input-dark) !important; }
+        .raadsel input { 
+            background-color: var(--input-dark); 
+            color: var(--goat-milk); 
+            text-align: center; 
+            font-size: 1.4em; 
+            text-transform: uppercase; 
+            padding: 0; 
+            margin: 0; 
+            box-sizing: border-box; 
+            outline: none; 
+            font-weight: bold; 
+            border: 2px solid var(--charcoal-smoke); 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 0; 
+            transition: background-color 0.3s; 
+        }
+        .correct { background-color: var(--correct-green) !important; border-color: var(--correct-green) !important; color: var(--goat-milk) !important; }
+        
+        /* --- Vuurwerk & Modal STIJLEN (ongewijzigd) --- */
+        .firework-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 102; overflow: hidden; }
+        .modal { display: none; position: fixed; z-index: 101; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .modal.active { display: flex; }
+        .modal-content { background-color: var(--goat-milk); margin: 10% auto; padding: 40px; border-radius: 15px; width: 90%; max-width: 600px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; position: relative; animation: zoomIn 0.5s ease-out; }
+        .modal-content h2 { font-family: 'Playfair Display', serif; color: var(--mulled-wine); font-size: clamp(1.8em, 5vw, 2.8em); margin-bottom: 20px; text-shadow: 2px 2px var(--antique-marble); }
+        .modal-content p { font-size: clamp(1em, 2.5vw, 1.4em); line-height: 1.6; color: var(--charcoal-smoke); font-weight: 700; margin-bottom: 30px; }
+        
+        .modal-images {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+            margin-top: 25px;
+            margin-bottom: 25px;
+            flex-wrap: wrap; 
+        }
+        .modal-images img {
+            max-width: 45%; 
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            object-fit: cover;
+            min-width: 150px; 
+        }
+        
+        .close-button { position: absolute; top: 15px; right: 25px; color: var(--mulled-wine); font-size: 35px; font-weight: bold; cursor: pointer; transition: color 0.3s ease; }
+
+        /* Vuurwerk/Confetti basisstijlen */
+        .firework { position: absolute; border-radius: 50%; animation-timing-function: ease-out; pointer-events: none; opacity: 0.8; transform: scale(0); }
+        .confetti { width: 6px; height: 9px; position: absolute; pointer-events: none; opacity: 0; will-change: transform, opacity; }
+
+        @keyframes fall {
+            0% { transform: translate(var(--startX), -100px) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--endX), 100vh) rotate(720deg); opacity: 0.8; }
+        }
+        
+        /* ⭐⭐⭐ MEDIA QUERY VOOR MOBIEL (Schermbreedte <= 768px) ⭐⭐⭐ */
+        @media (max-width: 768px) {
+            .content-container {
+                flex-direction: column; /* Stapel de kolommen op elkaar */
+                gap: 30px; 
+                width: 100%;
+                padding: 0 10px;
+                margin-bottom: 50px;
+            }
+            
+            /* Zet de instructiekolom (uitleg) bovenaan op mobiel */
+            .instructie-kolom {
+                min-width: unset; 
+                width: 100%;
+                order: 1; 
+            }
+
+            /* Zet de scrabble bord-wrapper (bord) onderaan op mobiel */
+            .scrabble-bord-wrapper {
+                max-width: 100%; 
+                width: 100%;
+                order: 2; 
+                margin: 0 auto; 
+                overflow-x: auto; /* Belangrijk voor horizontaal scrollen op smalle schermen */
+            }
+
+            .scrabble-bord {
+                min-width: 450px; /* Zorgt ervoor dat cellen niet te klein worden */
+            }
+
+            /* Lettergrootte verkleinen op kleine schermen */
+            .letter-blok, .raadsel input {
+                font-size: 1.2em; 
+            }
+            
+            .puzzel-uitleg, .tip-box {
+                padding: 20px;
+            }
+        }
+        
+        /* Zeer kleine schermen (Minder dan 480px breed) */
+        @media (max-width: 480px) {
+            .scrabble-bord {
+                min-width: 400px; 
+            }
+            .letter-blok, .raadsel input {
+                font-size: 1.1em;
+            }
+            .scrabble-bord th {
+                font-size: 0.7em;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="banner">
+        <h1>Patrick's Verjaardagsscrabble</h1>
+    </div>
+
+    <div class="content-container">
+        
+        <div class="instructie-kolom">
+            <div class="puzzel-uitleg">
+                <h2>Jouw Cadeautje</h2>
+                <p>Vul de drie ontbrekende woorden correct in op de **donkerbruine invulvakken**.</p>
+                <p>Als een woord correct is, kleuren de vakjes **groen**.</p>
+                <p>Wanneer u alle woorden correct heeft ingevuld, heeft u de aanwijzingen gevonden.</p>
+
+                <div class="tip-box">
+                    <h3>De Drie Aanwijzingen:</h3>
+                    <p>1. **Horizontaal A10:** De vurige zigeunerin die haar vrijheid eist, uit een Spaanse opera. (6 letters) </p>
+                    <p>2. **Verticaal D1:** De kunstvorm van het libretto, zang en drama. (5 letters)  </p>
+                    <p>3. **Horizontaal E7:** Symbool van de Franse Revolutie en een historisch plein in Parijs. (8 letters) </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="scrabble-bord-wrapper">
+            <table class="scrabble-bord">
+                <thead>
+                    <tr>
+                        <th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th><th>K</th><th>L</th><th>M</th><th>N</th><th>O</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>1</th><td class="letter"><div class="letter-blok">P</div></td><td></td><td></td><td class="raadsel"><input maxlength="1" id="D1"></td><td></td><td class="letter"><div class="letter-blok">O</div></td><td class="letter"><div class="letter-blok">R</div></td><td class="letter"><div class="letter-blok">I</div></td><td class="letter"><div class="letter-blok">Ë</div></td><td class="letter"><div class="letter-blok">N</div></td><td class="letter"><div class="letter-blok">T</div></td><td></td><td></td><td></td><td></td></tr>
+                    <tr>
+                        <th>2</th><td class="letter"><div class="letter-blok">A</div></td><td></td><td></td><td class="raadsel"><input maxlength="1" id="D2"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr>
+                        <th>3</th><td class="letter"><div class="letter-blok">R</div></td><td></td><td></td><td class="raadsel"><input maxlength="1" id="D3"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr>
+                        <th>4</th><td class="letter"><div class="letter-blok">I</div></td><td></td><td></td><td class="raadsel"><input maxlength="1" id="D4"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr>
+                        <th>5</th><td class="letter"><div class="letter-blok">J</div></td><td></td><td></td><td class="raadsel"><input maxlength="1" id="D5"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <th>6</th><td class="letter"><div class="letter-blok">S</div></td><td></td><td></td><td></td><td></td><td class="letter"><div class="letter-blok">K</div></td><td class="letter"><div class="letter-blok">U</div></td><td class="letter"><div class="letter-blok">N</div></td><td class="letter"><div class="letter-blok">S</div></td><td class="letter"><div class="letter-blok">T</div></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr>
+                        <th>7</th><td></td><td></td><td></td><td></td><td class="raadsel"><input maxlength="1" id="E7"></td><td class="raadsel"><input maxlength="1" id="F7"></td><td class="raadsel"><input maxlength="1" id="G7"></td><td class="raadsel"><input maxlength="1" id="H7"></td><td class="raadsel"><input maxlength="1" id="I7"></td><td class="raadsel"><input maxlength="1" id="J7"></td><td class="raadsel"><input maxlength="1" id="K7"></td><td class="raadsel"><input maxlength="1" id="L7"></td><td></td><td></td></tr>
+                    <tr>
+                        <th>8</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr>
+                        <th>9</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr>
+                        <th class="raadsel-rij">10</th><td class="raadsel"><input maxlength="1" id="A10"></td><td class="raadsel"><input maxlength="1" id="B10"></td><td class="raadsel"><input maxlength="1" id="C10"></td><td class="raadsel"><input maxlength="1" id="D10"></td><td class="raadsel"><input maxlength="1" id="E10"></td><td class="raadsel"><input maxlength="1" id="F10"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr><th>11</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr>
+                        <th>12</th><td></td><td></td><td class="letter"><div class="letter-blok">K</div></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <th>13</th><td></td><td></td><td class="letter"><div class="letter-blok">L</div></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <th>14</th><td></td><td></td><td class="letter"><div class="letter-blok">A</div></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>
+                    <tr>
+                        <th>15</th><td></td><td></td><td class="letter"><div class="letter-blok">S</div></td><td></td><td class="letter"><div class="letter-blok">L</div></td><td class="letter"><div class="letter-blok">I</div></td><td class="letter"><div class="letter-blok">B</div></td><td class="letter"><div class="letter-blok">R</div></td><td class="letter"><div class="letter-blok">E</div></td><td class="letter"><div class="letter-blok">T</div></td><td class="letter"><div class="letter-blok">T</div></td><td class="letter"><div class="letter-blok">O</div></td><td></td><td></td><td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    
+<div id="verjaardagModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="sluitModal()">&times;</span>
+            <h2>Gelukkige Verjaardag!</h2>
+            <p>We gaan naar Parijs op 13 februari genieten van de opera Carmen, voorafgaande van een heerlijke lunch!</p>
+            
+            <div class="modal-images">
+                <img src="Scherm­afbeelding 2025-11-02 om 16.26.24.png" alt="Illustratie van de opera Carmen" title="Carmen">
+                <img src="Scherm­afbeelding 2025-11-02 om 16.26.56.png" alt="Schets van de Eiffeltoren in Parijs" title="Parijs">
+            </div>
+            </div>
+    </div>
+
+    
+<div id="fireworkContainer" class="firework-container"></div>
+    
+    <audio id="celebrationSound" src="feestgeluid.mp3" preload="auto"></audio>
+
+    <script>
+        const woorden = {
+            CARMEN: { correct: 'CARMEN', ids: ['A10', 'B10', 'C10', 'D10', 'E10', 'F10'], solved: false },
+            OPERA: { correct: 'OPERA', ids: ['D1', 'D2', 'D3', 'D4', 'D5'], solved: false },
+            BASTILLE: { correct: 'BASTILLE', ids: ['E7', 'F7', 'G7', 'H7', 'I7', 'J7', 'K7', 'L7'], solved: false }
+        };
+
+        let alleWoordenOpgehelderd = false; 
+        const colors = ['#FF4500', '#FFD700', '#ADFF2F', '#1E90FF', '#FF1493', '#FFFFFF', '#FFFF00', '#32CD32', '#8A2BE2', '#FF6347', '#00FFFF'];
+        let styleSheet; 
+
+        function updateVakjesKleur(ids, isCorrect) {
+            for (const id of ids) {
+                const inputElement = document.getElementById(id);
+                if (inputElement && inputElement.tagName === 'INPUT') {
+                    if (isCorrect) {
+                        inputElement.classList.add('correct');
+                    } else {
+                        inputElement.classList.remove('correct');
+                    }
+                }
+            }
+        }
+
+        function controleerPuzzel() {
+            let currentAllSolved = true;
+
+            for (const key in woorden) {
+                const woord = woorden[key];
+                const ingevuld = woord.ids.map(id => document.getElementById(id)?.value?.toUpperCase() || '').join('');
+                
+                if (ingevuld === woord.correct) {
+                    updateVakjesKleur(woord.ids, true);
+                    woord.solved = true;
+                } else {
+                    updateVakjesKleur(woord.ids, false);
+                    woord.solved = false;
+                    currentAllSolved = false;
+                }
+            }
+
+            if (currentAllSolved && !alleWoordenOpgehelderd) {
+                alleWoordenOpgehelderd = true;
+                toonVerjaardagsfeest();
+            } else if (!currentAllSolved) {
+                alleWoordenOpgehelderd = false; 
+            }
+        }
+
+        function toonVerjaardagsfeest() {
+            const modal = document.getElementById('verjaardagModal');
+            const sound = document.getElementById('celebrationSound');
+            
+            styleSheet = document.styleSheets[0] || document.createElement('style');
+            if (!document.styleSheets[0]) {
+                document.head.appendChild(styleSheet);
+                styleSheet = document.styleSheets[0];
+            }
+
+            modal.classList.add('active'); 
+            
+            if (sound) {
+                sound.play().catch(e => {
+                    console.error("Fout bij afspelen geluid. Zorg voor een 'feestgeluid.mp3' bestand.", e);
+                });
+            }
+            startVuurwerk(25); 
+            startConfetti(200); 
+            
+        }
+
+        function sluitModal() {
+            const modal = document.getElementById('verjaardagModal');
+            modal.classList.remove('active');
+            const sound = document.getElementById('celebrationSound');
+            if (sound) { sound.pause(); sound.currentTime = 0; }
+            const fireworkContainer = document.getElementById('fireworkContainer');
+            fireworkContainer.innerHTML = ''; 
+        }
+
+        // --- Confetti Functie ---
+        function startConfetti(count) {
+            const fireworkContainer = document.getElementById('fireworkContainer');
+            
+            for (let i = 0; i < count; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                const startX = Math.random() * 100; 
+                const endOffset = (Math.random() * 500) - 250; 
+                
+                confetti.style.setProperty('--startX', `${startX}vw`);
+                confetti.style.setProperty('--endX', `calc(${startX}vw + ${endOffset}px)`);
+
+                confetti.style.animationName = 'fall';
+                confetti.style.animationDuration = `${4 + Math.random() * 3}s`; 
+                confetti.style.animationDelay = `${Math.random() * 2}s`; 
+                confetti.style.animationIterationCount = '1';
+                confetti.style.animationTimingFunction = 'linear';
+                confetti.style.opacity = '1';
+                confetti.style.left = '0'; 
+                confetti.style.top = '0';
+                
+                fireworkContainer.appendChild(confetti);
+
+                confetti.addEventListener('animationend', () => confetti.remove());
+            }
+        }
+        
+        // --- Vuurwerk Functie ---
+        function startVuurwerk(count) {
+            const fireworkContainer = document.getElementById('fireworkContainer');
+            
+            for (let i = 0; i < count; i++) {
+                const uniqueId = Math.random().toString(36).substring(2, 9);
+                const x = Math.random() * window.innerWidth; 
+                const y = Math.random() * window.innerHeight * 0.7;
+
+                setTimeout(() => {
+                    explodeFirework(x, y, colors[Math.floor(Math.random() * colors.length)], uniqueId, styleSheet);
+                }, i * 150);
+            }
+        }
+
+        function explodeFirework(startX, startY, color, uniqueId, styleSheet) {
+            const fireworkContainer = document.getElementById('fireworkContainer');
+            const particleCount = 50 + Math.random() * 30;
+            const maxDistance = 150 + Math.random() * 100;
+            const minDistance = 30;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('firework');
+                particle.style.backgroundColor = color;
+                
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * (maxDistance - minDistance) + minDistance;
+
+                const endX = startX + distance * Math.cos(angle);
+                const endY = startY + distance * Math.sin(angle);
+
+                particle.style.left = `${startX}px`;
+                particle.style.top = `${startY}px`;
+                particle.style.width = `${3 + Math.random() * 4}px`;
+                particle.style.height = particle.style.width;
+                
+                const animDuration = 1.2 + Math.random() * 0.8;
+                
+                // keyframes toevoegen via CSSOM
+                const keyframes = `
+                    @keyframes particleExplode-${uniqueId}-${i} {
+                        0% { transform: translate(0, 0) scale(0.2); opacity: 1; }
+                        50% { opacity: 1; }
+                        100% { transform: translate(${endX - startX}px, ${endY - startY}px) scale(0); opacity: 0; }
+                    }
+                `;
+                
+                try {
+                    
+                    if(styleSheet.insertRule) {
+                        styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
+                    } else if (styleSheet.addRule) { 
+                        styleSheet.addRule(keyframes, styleSheet.cssRules.length);
+                    }
+                    particle.style.animation = `particleExplode-${uniqueId}-${i} ${animDuration}s forwards`;
+                } catch (e) {
+                    console.warn("Vuurwerk keyframe invoeging mislukt", e);
+                }
+
+                fireworkContainer.appendChild(particle);
+
+                particle.addEventListener('animationend', () => {
+                    particle.remove();
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Focus op het eerste input veld om de start makkelijker te maken
+            document.getElementById('D1')?.focus();
+
+            const alleInputs = document.querySelectorAll('.raadsel input');
+            alleInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    // Zet de invoer om naar hoofdletters en beperk tot 1 teken
+                    this.value = this.value.toUpperCase().slice(0, 1);
+                    
+                    if (this.value.length === 1) {
+                        // Spring naar het volgende input veld
+                        const allInputsArray = Array.from(alleInputs);
+                        const currentIndex = allInputsArray.indexOf(this);
+                        if (currentIndex > -1 && currentIndex < allInputsArray.length - 1) {
+                            allInputsArray[currentIndex + 1].focus();
+                        }
+                    }
+                    controleerPuzzel();
+                });
+                // Controleer de puzzel bij het laden, voor het geval er al ingevulde waarden zijn
+                controleerPuzzel();
+            });
+
+            const modal = document.getElementById('verjaardagModal');
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    sluitModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
